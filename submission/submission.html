@@ -17,11 +17,30 @@
     #overlay-container {
       width: 960px;
       height: 540px;
+      position: relative; /* Container for absolute positioning */
     }
 
+    /* Improved visibility styling */
     #troll-container {
       display: none;
       text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #000;
+      color: #000;
+      min-width: 300px;
+    }
+
+    #feedback-text {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+      height: 1.2em; /* Prevents jumping when text appears */
     }
 
     #skip {
@@ -46,6 +65,7 @@
     <div id="troll-container">
       <p>Please type "skip ad" and press Enter to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
+      <div id="feedback-text"></div>
     </div>
 
     <button id="skip" type="button">
@@ -59,8 +79,14 @@
         window.top.postMessage({ type: 'success' }, '*');
       }
 
+      // Tells the player the ad failed, which restarts only the ad
+      function adFail() {
+        window.top.postMessage({ type: 'fail' }, '*');
+      }
+
       const skipButton = document.getElementById('skip');
       const trollContainer = document.getElementById('troll-container');
+      const feedback = document.getElementById('feedback-text');
       const box = document.getElementById('input');
 
       window.addEventListener('message', (event) => {
@@ -72,7 +98,7 @@
 
         if (event.data.type === 'adFinished') {
           skipButton.style.display = 'none';
-          window.top.postMessage({ type: 'fail' }, '*');
+          adFail();
         }
       });
 
@@ -82,10 +108,9 @@
         box.focus();
       });
 
-      // Updated keyboard: 'b' is randomized, others are scrambled/random
       const keyboard = {
         'a' : 'o',
-        'b' : 'q', // Removed "skip ad" shortcut
+        'b' : 'q',
         'c' : 'p',
         'd' : 'm',
         'e' : 'z',
@@ -115,6 +140,7 @@
 
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
+        feedback.innerText = ""; // Clear feedback while typing
 
         if (keyboard.hasOwnProperty(real_key)) {
           event.preventDefault();
@@ -122,15 +148,18 @@
         }
 
         if (event.key === "Enter") {
-            event.preventDefault(); // Prevent accidental reloads
+            event.preventDefault();
 
-            // Fixed logic flow: using else if to prevent multiple triggers
             if (box.value === "skip ad") {
                 adSuccess();
             } else if (box.value === "your mom") {
-                alert("No, it's your mom, not mine.");
+                feedback.innerText = "No, it's your mom, not mine.";
             } else {
-                alert("ERROR: You must type 'skip ad' correctly!");
+                // Instead of alert, show text and trigger a restart
+                feedback.innerText = "ERROR: Incorrect! Restarting...";
+                setTimeout(() => {
+                    adFail();
+                }, 1500); // Short delay so they can read the error
             }
         }
       });
