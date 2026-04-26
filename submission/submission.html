@@ -4,25 +4,48 @@
   <meta charset="utf-8">
   <title>Joel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style type="text/css">
-    html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
-    #overlay-container { width: 960px; height: 540px; text-align: center; }
+    html,
+    body {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    #overlay-container {
+      width: 960px;
+      height: 540px;
+    }
+
     #skip {
-      display: none; 
-      position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
-      font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      padding: 10px 18px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid black;
+      border-right-width: 0;
+      font-size: 1.2rem;
+      border-radius: 4px 0 0 4px;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
-<body>
 
+<body>
   <div id="troll-container">
       <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
-      <button id="skip">Skip Ad...</button>
   </div>
+
+  <button id="skip">
+    Skip Ad...
+  </button>
 
   <script type="text/javascript">
     (function(window, document){
@@ -31,8 +54,21 @@
       }
 
       const skipButton = document.getElementById('skip');
-      
-      // YOUR EXACT KEYBOARD MAP
+
+      window.addEventListener('message', (event) => {
+        if (!event.data || !event.data.type) return;
+
+        if (event.data.type === 'adStarted') {
+          skipButton.style.display = 'block';
+        }
+
+        if (event.data.type === 'adFinished') {
+          skipButton.style.display = 'none';
+          window.top.postMessage({ type: 'fail' }, '*');
+        }
+      });
+
+      // --- YOUR CODE STARTS HERE ---
       const keyboard = {
         'a' : 'o',
         'b' : 'skip ad',
@@ -60,12 +96,11 @@
         'x' : 'x',
         'y' : 'x',
         'z' : 'x',
-        ' ' : ' m', // Kept your space with the 'm'
+        ' ' : ' m',
       };
 
       const box = document.getElementById('input');
 
-      // YOUR EXACT EVENT LISTENER
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
         if (keyboard.hasOwnProperty(real_key)) {
@@ -76,18 +111,7 @@
           adSuccess();
         }
       });
-
-      // TEMPLATE LOGIC (Required for the Ad to work)
-      window.addEventListener('message', (event) => {
-        if (!event.data || !event.data.type) return;
-        if (event.data.type === 'adStarted') {
-          skipButton.style.display = 'block';
-        }
-        if (event.data.type === 'adFinished') {
-          skipButton.style.display = 'none';
-          window.top.postMessage({ type: 'fail' }, '*');
-        }
-      });
+      // --- YOUR CODE ENDS HERE ---
 
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
