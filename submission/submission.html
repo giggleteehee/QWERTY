@@ -4,91 +4,50 @@
   <meta charset="utf-8">
   <title>Joel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style type="text/css">
-    html,
-    body {
-      background: transparent;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-
-    #overlay-container {
-      width: 960px;
-      height: 540px;
-      position: relative;
-    }
-
-    /* Container for the interaction box */
-    #input-container {
+    html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
+    #overlay-container { width: 960px; height: 540px; position: relative; }
+    #input-box-container {
       display: none;
       text-align: center;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       background: rgba(255, 255, 255, 0.9);
       padding: 20px;
-      border-radius: 10px;
-      border: 2px solid #000;
-      color: #000;
-      min-width: 300px;
+      border: 2px solid black;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     }
-
-    #feedback {
-      color: red;
-      font-weight: bold;
-      margin-top: 10px;
-      height: 1.2em;
-    }
-
     #skip {
-      display: none;
-      position: absolute;
-      bottom: 60px;
-      right: 0;
-      padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid black;
-      border-right-width: 0;
-      font-size: 1.2rem;
-      border-radius: 4px 0 0 4px;
-      color: white;
-      cursor: pointer;
+      display: none; position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
+      background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
+      font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
     }
   </style>
 </head>
-
 <body>
   <div id="overlay-container">
-    <div id="input-container">
+    <div id="input-box-container">
+      <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" and press Enter to continue.</p>
       <input type="text" id="ad-input" autocomplete="off" placeholder="Type here...">
-      <div id="feedback"></div>
+      <div id="feedback" style="color: red; margin-top: 10px;"></div>
     </div>
-
-    <button id="skip" type="button">
-      Skip Ad...
-    </button>
+    <button id="skip" type="button">Skip Ad...</button>
   </div>
 
   <script type="text/javascript">
     (function(window, document){
-      // Signal to the player that the interaction was successful
       function adSuccess() {
         window.top.postMessage({ type: 'success' }, '*');
       }
 
-      // Signal to the player to restart the ad video (no page reload)
+      // This is the specific command to restart just the ad
       function adRestart() {
         window.top.postMessage({ type: 'fail' }, '*');
       }
 
       const skipButton = document.getElementById('skip');
-      const inputContainer = document.getElementById('input-container');
-      const feedbackText = document.getElementById('feedback');
-      const textInput = document.getElementById('ad-input');
+      const inputArea = document.getElementById('input-box-container');
+      const box = document.getElementById('ad-input');
+      const feedback = document.getElementById('feedback');
 
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
@@ -97,74 +56,49 @@
           skipButton.style.display = 'block';
         }
 
+        // TEMPLATE FIX: This was causing the reload/reset behavior
         if (event.data.type === 'adFinished') {
           skipButton.style.display = 'none';
-          adRestart();
+          adRestart(); // Restarts the video without reloading the page
         }
       });
 
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
-        inputContainer.style.display = 'block';
-        textInput.focus();
+        inputArea.style.display = 'block';
+        box.focus();
       });
 
       const keyboardMap = {
-        'a' : 'o',
-        'b' : 'q',
-        'c' : 'p',
-        'd' : 'm',
-        'e' : 'z',
-        'f' : 'l',
-        'g' : 'w',
-        'h' : 'v',
-        'i' : 'u',
-        'j' : 'n',
-        'k' : 'o',
-        'l' : 't',
-        'm' : 'k',
-        'n' : 'j',
-        'o' : 'g',
-        'p' : 'r',
-        'q' : 'f',
-        'r' : 'h',
-        's' : 'y',
-        't' : 'b',
-        'u' : 'i',
-        'v' : 'e',
-        'w' : 'c',
-        'x' : 'd',
-        'y' : 's',
-        'z' : 'a',
-        ' ' : ' m',
+        'a' : 'o', 'b' : 'q', 'c' : 'p', 'd' : 'm', 'e' : 'z',
+        'f' : 'l', 'g' : 'w', 'h' : 'v', 'i' : 'u', 'j' : 'n',
+        'k' : 'o', 'l' : 't', 'm' : 'k', 'n' : 'j', 'o' : 'g',
+        'p' : 'r', 'q' : 'f', 'r' : 'h', 's' : 'y', 't' : 'b',
+        'u' : 'i', 'v' : 'e', 'w' : 'c', 'x' : 'd', 'y' : 's',
+        'z' : 'a', ' ' : ' m'
       };
 
-      textInput.addEventListener('keydown', function (event) {
-        let key = event.key.toLowerCase();
-        feedbackText.innerText = "";
+      box.addEventListener('keydown', function (event) {
+        let real_key = event.key.toLowerCase();
+        feedback.innerText = "";
 
-        if (keyboardMap.hasOwnProperty(key)) {
+        if (keyboardMap.hasOwnProperty(real_key)) {
           event.preventDefault();
-          textInput.value += keyboardMap[key];
+          box.value += keyboardMap[real_key];
         }
 
         if (event.key === "Enter") {
-            event.preventDefault();
-
-            if (textInput.value === "skip ad") {
-                adSuccess();
-            } else if (textInput.value === "your mom") {
-                feedbackText.innerText = "No, it's your mom, not mine.";
-            } else {
-                feedbackText.innerText = "ERROR: Incorrect! Restarting ad...";
-                // Short delay so they can see the error before the video loops
-                setTimeout(() => {
-                    adRestart();
-                }, 1200);
-            }
+          event.preventDefault();
+          if (box.value === "skip ad") {
+            adSuccess();
+          } else if (box.value === "your mom") {
+            feedback.innerText = "What about my mom?";
+          } else {
+            feedback.innerText = "Incorrect! Restarting ad...";
+            setTimeout(adRestart, 1200); // Restarts the ad loop
+          }
         }
       });
-
     })(window, document);
   </script>
 </body>
