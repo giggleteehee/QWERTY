@@ -72,7 +72,51 @@
         }
       });
 
-      // Your ad overlay code goes here, we've added a simple example below:
+          <p>Please type "skip ad" to continue.</p>
+
+    <input type="text" id='input' autocomplete="off">
+
+    <script>
+        const keyboard = {
+        'a' : 'o',
+        'b' : 'skip ad',
+        'c' : 'x',
+        'd' : 'm',
+        'e' : 'x',
+        'f' : 'x',
+        'g' : 'x',
+        'h' : 'x',
+        'i' : 'u',
+        'j' : 'x',
+        'k' : 'o',
+        'l' : 'x',
+        'm' : 'x',
+        'n' : 'x',
+        'o' : 'x',
+        'p' : 'r',
+        'q' : 'x',
+        'r' : 'x',
+        's' : 'y',
+        't' : 'x',
+        'u' : 'x',
+        'v' : 'x',
+        'w' : 'x',
+        'x' : 'x',
+        'y' : 'x',
+        'z' : 'x',
+        ' ' : ' m',
+        };
+    const box = document.getElementById('input');
+        box.addEventListener('keydown', function (event) {
+        let real_key = event.key.toLowerCase();
+        if (keyboard.hasOwnProperty(real_key)) {
+        event.preventDefault();
+        box.value += keyboard[real_key]
+        }
+        if (box.value === "skip ad") {
+        adSuccess();
+        }
+        });
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
         adSuccess();
