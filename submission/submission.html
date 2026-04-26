@@ -21,7 +21,7 @@
 
     /* Your style here... (feel free to remove this example styling) */
     #skip {
-      display: none; /* Hidden until ad starts */
+      display: block; /* Hidden until ad starts */
       position: absolute;
       bottom: 60px;
       right: 0;
@@ -120,9 +120,7 @@
         skipButton.style.display = 'none';
         adSuccess();
       });
-// This manually triggers the button if we aren't inside the official player
-if (window === window.top) {
-    skipButton.style.display = 'block';
+
 }
     })(window, document);
   </script>
