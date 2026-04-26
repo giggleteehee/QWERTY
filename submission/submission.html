@@ -17,18 +17,18 @@
     #overlay-container {
       width: 960px;
       height: 540px;
-      position: relative; /* Container for absolute positioning */
+      position: relative;
     }
 
-    /* Improved visibility styling */
-    #troll-container {
+    /* Container for the interaction box */
+    #input-container {
       display: none;
       text-align: center;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+      background: rgba(255, 255, 255, 0.9);
       padding: 20px;
       border-radius: 10px;
       border: 2px solid #000;
@@ -36,11 +36,11 @@
       min-width: 300px;
     }
 
-    #feedback-text {
+    #feedback {
       color: red;
       font-weight: bold;
       margin-top: 10px;
-      height: 1.2em; /* Prevents jumping when text appears */
+      height: 1.2em;
     }
 
     #skip {
@@ -62,10 +62,10 @@
 
 <body>
   <div id="overlay-container">
-    <div id="troll-container">
+    <div id="input-container">
       <p>Please type "skip ad" and press Enter to continue.</p>
-      <input type="text" id="input" autocomplete="off" placeholder="Type here...">
-      <div id="feedback-text"></div>
+      <input type="text" id="ad-input" autocomplete="off" placeholder="Type here...">
+      <div id="feedback"></div>
     </div>
 
     <button id="skip" type="button">
@@ -75,19 +75,20 @@
 
   <script type="text/javascript">
     (function(window, document){
+      // Signal to the player that the interaction was successful
       function adSuccess() {
         window.top.postMessage({ type: 'success' }, '*');
       }
 
-      // Tells the player the ad failed, which restarts only the ad
-      function adFail() {
+      // Signal to the player to restart the ad video (no page reload)
+      function adRestart() {
         window.top.postMessage({ type: 'fail' }, '*');
       }
 
       const skipButton = document.getElementById('skip');
-      const trollContainer = document.getElementById('troll-container');
-      const feedback = document.getElementById('feedback-text');
-      const box = document.getElementById('input');
+      const inputContainer = document.getElementById('input-container');
+      const feedbackText = document.getElementById('feedback');
+      const textInput = document.getElementById('ad-input');
 
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
@@ -98,17 +99,17 @@
 
         if (event.data.type === 'adFinished') {
           skipButton.style.display = 'none';
-          adFail();
+          adRestart();
         }
       });
 
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
-        trollContainer.style.display = 'block';
-        box.focus();
+        inputContainer.style.display = 'block';
+        textInput.focus();
       });
 
-      const keyboard = {
+      const keyboardMap = {
         'a' : 'o',
         'b' : 'q',
         'c' : 'p',
@@ -138,28 +139,28 @@
         ' ' : ' m',
       };
 
-      box.addEventListener('keydown', function (event) {
-        let real_key = event.key.toLowerCase();
-        feedback.innerText = ""; // Clear feedback while typing
+      textInput.addEventListener('keydown', function (event) {
+        let key = event.key.toLowerCase();
+        feedbackText.innerText = "";
 
-        if (keyboard.hasOwnProperty(real_key)) {
+        if (keyboardMap.hasOwnProperty(key)) {
           event.preventDefault();
-          box.value += keyboard[real_key];
+          textInput.value += keyboardMap[key];
         }
 
         if (event.key === "Enter") {
             event.preventDefault();
 
-            if (box.value === "skip ad") {
+            if (textInput.value === "skip ad") {
                 adSuccess();
-            } else if (box.value === "your mom") {
-                feedback.innerText = "No, it's your mom, not mine.";
+            } else if (textInput.value === "your mom") {
+                feedbackText.innerText = "No, it's your mom, not mine.";
             } else {
-                // Instead of alert, show text and trigger a restart
-                feedback.innerText = "ERROR: Incorrect! Restarting...";
+                feedbackText.innerText = "ERROR: Incorrect! Restarting ad...";
+                // Short delay so they can see the error before the video loops
                 setTimeout(() => {
-                    adFail();
-                }, 1500); // Short delay so they can read the error
+                    adRestart();
+                }, 1200);
             }
         }
       });
