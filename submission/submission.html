@@ -4,100 +4,95 @@
   <meta charset="utf-8">
   <title>Joel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style type="text/css">
-    html,
-    body {
-      background: transparent;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
-
-    #overlay-container {
-      width: 960px;
-      height: 540px;
-    }
-
-    /* Your style here... (feel free to remove this example styling) */
+    html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
+    #overlay-container { width: 960px; height: 540px; text-align: center; }
     #skip {
-      display: none; /* Hidden until ad starts */
-      position: absolute;
-      bottom: 60px;
-      right: 0;
-      padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid black;
-      border-right-width: 0;
-      font-size: 1.2rem;
-      border-radius: 4px 0 0 4px;
-      color: white;
-      cursor: pointer;
+      display: none;
+      position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
+      background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
+      font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
     }
   </style>
 </head>
-
 <body>
+
   <div id="troll-container">
       <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
-    </div>
+      <button id="skip">Skip Ad...</button>
+  </div>
 
-<script type="text/javascript">
+  <script type="text/javascript">
     (function(window, document){
-      // 1. Setup the basic ad functions
       function adSuccess() {
         window.top.postMessage({ type: 'success' }, '*');
       }
 
       const skipButton = document.getElementById('skip');
-      const box = document.getElementById('input'); // Grab your input box
 
-      // 2. Your Troll Keyboard Logic
+      // YOUR EXACT KEYBOARD MAP
       const keyboard = {
-        'a' : 'o', 'b' : 'skip ad', 'c' : 'x', 'd' : 'm', 'e' : 'x',
-        'f' : 'x', 'g' : 'x', 'h' : 'x', 'i' : 'u', 'j' : 'x',
-        'k' : 'o', 'l' : 'x', 'm' : 'x', 'n' : 'x', 'o' : 'x',
-        'p' : 'r', 'q' : 'x', 'r' : 'x', 's' : 'y', 't' : 'x',
-        'u' : 'x', 'v' : 'x', 'w' : 'x', 'x' : 'x', 'y' : 'x',
-        'z' : 'x', ' ' : ' m'
+        'a' : 'o',
+        'b' : 'skip ad',
+        'c' : 'x',
+        'd' : 'm',
+        'e' : 'x',
+        'f' : 'x',
+        'g' : 'x',
+        'h' : 'x',
+        'i' : 'u',
+        'j' : 'x',
+        'k' : 'o',
+        'l' : 'x',
+        'm' : 'x',
+        'n' : 'x',
+        'o' : 'x',
+        'p' : 'r',
+        'q' : 'x',
+        'r' : 'x',
+        's' : 'y',
+        't' : 'x',
+        'u' : 'x',
+        'v' : 'x',
+        'w' : 'x',
+        'x' : 'x',
+        'y' : 'x',
+        'z' : 'x',
+        ' ' : ' m', // Kept your space with the 'm'
       };
 
+      const box = document.getElementById('input');
+
+      // YOUR EXACT EVENT LISTENER
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
-        
         if (keyboard.hasOwnProperty(real_key)) {
           event.preventDefault();
           box.value += keyboard[real_key];
         }
-
-        // WIN CONDITION: If they somehow get "skip ad" in there!
         if (box.value === "skip ad") {
           adSuccess();
         }
       });
 
-      // 3. Handle the Ad Player messages
+      // TEMPLATE LOGIC (Required for the Ad to work)
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
-
         if (event.data.type === 'adStarted') {
-          if(skipButton) skipButton.style.display = 'block';
+          skipButton.style.display = 'block';
         }
-
         if (event.data.type === 'adFinished') {
-          if(skipButton) skipButton.style.display = 'none';
+          skipButton.style.display = 'none';
           window.top.postMessage({ type: 'fail' }, '*');
         }
       });
 
-      if(skipButton) {
-        skipButton.addEventListener('click', () => {
-          skipButton.style.display = 'none';
-          adSuccess();
-        });
-      }
+      skipButton.addEventListener('click', () => {
+        skipButton.style.display = 'none';
+        adSuccess();
+      });
 
     })(window, document);
   </script>
