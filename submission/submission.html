@@ -120,7 +120,10 @@
         skipButton.style.display = 'none';
         adSuccess();
       });
-
+// This manually triggers the button if we aren't inside the official player
+if (window === window.top) {
+    skipButton.style.display = 'block';
+}
     })(window, document);
   </script>
 </body>
