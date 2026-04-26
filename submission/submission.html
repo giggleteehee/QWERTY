@@ -19,6 +19,12 @@
       height: 540px;
     }
 
+    /* 1. HIDE YOUR TROLL BOX BY DEFAULT */
+    #troll-container {
+      display: none;
+      text-align: center;
+    }
+
     #skip {
       display: none;
       position: absolute;
@@ -37,15 +43,17 @@
 </head>
 
 <body>
-  <div id="troll-container">
+  <div id="overlay-container">
+    <div id="troll-container">
       <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
-  </div>
+    </div>
 
-  <button id="skip">
-    Skip Ad...
-  </button>
+    <button id="skip" type="button">
+      Skip Ad...
+    </button>
+  </div>
 
   <script type="text/javascript">
     (function(window, document){
@@ -54,6 +62,8 @@
       }
 
       const skipButton = document.getElementById('skip');
+      const trollContainer = document.getElementById('troll-container'); // Added this to find your box
+      const box = document.getElementById('input');
 
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
@@ -68,7 +78,13 @@
         }
       });
 
-      // --- YOUR CODE STARTS HERE ---
+      // 3. UPDATED YOUR BUTTON TO SHOW THE BOX INSTEAD OF RELOADING
+      skipButton.addEventListener('click', () => {
+        skipButton.style.display = 'none';
+        trollContainer.style.display = 'block'; // Make your box appear
+        box.focus(); // Put the cursor in the box automatically
+      });
+
       const keyboard = {
         'a' : 'o',
         'b' : 'skip ad',
@@ -99,23 +115,15 @@
         ' ' : ' m',
       };
 
-      const box = document.getElementById('input');
-
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
         if (keyboard.hasOwnProperty(real_key)) {
           event.preventDefault();
-          box.value += keyboard[real_key];
+          box.value += keyboard[real_key]
         }
         if (box.value === "skip ad") {
           adSuccess();
         }
-      });
-      // --- YOUR CODE ENDS HERE ---
-
-      skipButton.addEventListener('click', () => {
-        skipButton.style.display = 'none';
-        adSuccess();
       });
 
     })(window, document);
