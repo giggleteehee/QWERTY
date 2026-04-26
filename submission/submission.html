@@ -19,8 +19,14 @@
       height: 540px;
     }
 
-    #skip {
+    /* Hide the troll container by default so it doesn't pop up immediately */
+    #troll-container {
       display: none;
+      text-align: center;
+    }
+
+    #skip {
+      display: none; /* Hidden until ad starts */
       position: absolute;
       bottom: 60px;
       right: 0;
@@ -37,15 +43,17 @@
 </head>
 
 <body>
-  <div id="troll-container">
+  <div id="overlay-container">
+    <div id="troll-container">
       <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
-  </div>
+    </div>
 
-  <button id="skip">
-    Skip Ad...
-  </button>
+    <button id="skip" type="button">
+      Skip Ad...
+    </button>
+  </div>
 
   <script type="text/javascript">
     (function(window, document){
@@ -54,7 +62,10 @@
       }
 
       const skipButton = document.getElementById('skip');
+      const trollContainer = document.getElementById('troll-container');
+      const box = document.getElementById('input');
 
+      // Listen for messages from the game shell
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
 
@@ -68,7 +79,15 @@
         }
       });
 
-      // --- YOUR CODE STARTS HERE ---
+      // Show the text box ONLY when the skip button is clicked
+      skipButton.addEventListener('click', (e) => {
+        e.preventDefault(); // Extra insurance against reloading
+        skipButton.style.display = 'none';
+        trollContainer.style.display = 'block';
+        box.focus(); // Automatically clicks inside the box for the user
+      });
+
+      // YOUR EXACT KEYBOARD LOGIC
       const keyboard = {
         'a' : 'o',
         'b' : 'skip ad',
@@ -99,8 +118,6 @@
         ' ' : ' m',
       };
 
-      const box = document.getElementById('input');
-
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
         if (keyboard.hasOwnProperty(real_key)) {
@@ -110,12 +127,6 @@
         if (box.value === "skip ad") {
           adSuccess();
         }
-      });
-      // --- YOUR CODE ENDS HERE ---
-
-      skipButton.addEventListener('click', () => {
-        skipButton.style.display = 'none';
-        adSuccess();
       });
 
     })(window, document);
