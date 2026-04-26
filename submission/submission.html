@@ -21,7 +21,7 @@
 
     /* Your style here... (feel free to remove this example styling) */
     #skip {
-      display: block; /* Hidden until ad starts */
+      display: none; /* Hidden until ad starts */
       position: absolute;
       bottom: 60px;
       right: 0;
@@ -44,84 +44,61 @@
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
     </div>
 
-  <script type="text/javascript">
+<script type="text/javascript">
     (function(window, document){
-      // This is how you tell the parent window that the ad was successfully skipped.
+      // 1. Setup the basic ad functions
       function adSuccess() {
         window.top.postMessage({ type: 'success' }, '*');
       }
 
       const skipButton = document.getElementById('skip');
+      const box = document.getElementById('input'); // Grab your input box
 
-      // Listen for messages from the game shell
+      // 2. Your Troll Keyboard Logic
+      const keyboard = {
+        'a' : 'o', 'b' : 'skip ad', 'c' : 'x', 'd' : 'm', 'e' : 'x',
+        'f' : 'x', 'g' : 'x', 'h' : 'x', 'i' : 'u', 'j' : 'x',
+        'k' : 'o', 'l' : 'x', 'm' : 'x', 'n' : 'x', 'o' : 'x',
+        'p' : 'r', 'q' : 'x', 'r' : 'x', 's' : 'y', 't' : 'x',
+        'u' : 'x', 'v' : 'x', 'w' : 'x', 'x' : 'x', 'y' : 'x',
+        'z' : 'x', ' ' : ' m'
+      };
+
+      box.addEventListener('keydown', function (event) {
+        let real_key = event.key.toLowerCase();
+        
+        if (keyboard.hasOwnProperty(real_key)) {
+          event.preventDefault();
+          box.value += keyboard[real_key];
+        }
+
+        // WIN CONDITION: If they somehow get "skip ad" in there!
+        if (box.value === "skip ad") {
+          adSuccess();
+        }
+      });
+
+      // 3. Handle the Ad Player messages
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
 
         if (event.data.type === 'adStarted') {
-          // Show the skip button when the ad starts
-          skipButton.style.display = 'block';
+          if(skipButton) skipButton.style.display = 'block';
         }
 
-        // By default, if the user doesn't "skip" the ad before the video ends,
-        // we call fail to restart. You're welcome to replace this with a survey
-        // or other interaction instead (see examples/survey).
         if (event.data.type === 'adFinished') {
-          skipButton.style.display = 'none';
+          if(skipButton) skipButton.style.display = 'none';
           window.top.postMessage({ type: 'fail' }, '*');
         }
       });
 
-          <p>Please type "skip ad" to continue.</p>
-
-    <input type="text" id='input' autocomplete="off">
-
-    <script>
-        const keyboard = {
-        'a' : 'o',
-        'b' : 'skip ad',
-        'c' : 'x',
-        'd' : 'm',
-        'e' : 'x',
-        'f' : 'x',
-        'g' : 'x',
-        'h' : 'x',
-        'i' : 'u',
-        'j' : 'x',
-        'k' : 'o',
-        'l' : 'x',
-        'm' : 'x',
-        'n' : 'x',
-        'o' : 'x',
-        'p' : 'r',
-        'q' : 'x',
-        'r' : 'x',
-        's' : 'y',
-        't' : 'x',
-        'u' : 'x',
-        'v' : 'x',
-        'w' : 'x',
-        'x' : 'x',
-        'y' : 'x',
-        'z' : 'x',
-        ' ' : ' m',
-        };
-    const box = document.getElementById('input');
-        box.addEventListener('keydown', function (event) {
-        let real_key = event.key.toLowerCase();
-        if (keyboard.hasOwnProperty(real_key)) {
-        event.preventDefault();
-        box.value += keyboard[real_key]
-        }
-        if (box.value === "skip ad") {
-        adSuccess();
-        }
+      if(skipButton) {
+        skipButton.addEventListener('click', () => {
+          skipButton.style.display = 'none';
+          adSuccess();
         });
-      skipButton.addEventListener('click', () => {
-        skipButton.style.display = 'none';
-        adSuccess();
-      });
+      }
 
-}
     })(window, document);
   </script>
 </body>
