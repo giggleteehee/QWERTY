@@ -45,8 +45,7 @@
 <body>
   <div id="overlay-container">
     <div id="troll-container">
-      <h1>UNSKIPPABLE AD</h1>
-      <p>Please type "skip ad" to continue.</p>
+      <p>Please type "skip ad" and press Enter to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
     </div>
 
@@ -77,8 +76,6 @@
           window.top.postMessage({ type: 'fail' }, '*');
         }
       });
-
-      // 3. UPDATED YOUR BUTTON TO SHOW THE BOX INSTEAD OF RELOADING
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
         trollContainer.style.display = 'block'; // Make your box appear
@@ -87,7 +84,7 @@
 
       const keyboard = {
         'a' : 'o',
-        'b' : 'skip the ad',
+        'b' : 'skip ad',
         'c' : 'x',
         'd' : 'm',
         'e' : 'x',
@@ -121,8 +118,15 @@
           event.preventDefault();
           box.value += keyboard[real_key]
         }
-        if (box.value === "skip ad") {
-          adSuccess();
+        if (event.key === "Enter") {
+            if (box.value === "skip ad") {
+                adSuccess()
+            }
+            if (box.value === "your mom") {
+                alert("No, it's your mom, not mine.");
+            } else {
+                alert("ERROR: You must type 'skip ad' correctly!");
+            }
         }
       });
 
