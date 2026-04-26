@@ -8,7 +8,7 @@
     html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
     #overlay-container { width: 960px; height: 540px; text-align: center; }
     #skip {
-      display: none;
+      display: none; 
       position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
       background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
       font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
@@ -18,7 +18,7 @@
 <body>
 
   <div id="troll-container">
-      <h1>QWERTY</h1>
+      <h1>UNSKIPPABLE AD</h1>
       <p>Please type "skip ad" to continue.</p>
       <input type="text" id="input" autocomplete="off" placeholder="Type here...">
       <button id="skip">Skip Ad...</button>
@@ -31,7 +31,7 @@
       }
 
       const skipButton = document.getElementById('skip');
-
+      
       // YOUR EXACT KEYBOARD MAP
       const keyboard = {
         'a' : 'o',
