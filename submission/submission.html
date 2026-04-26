@@ -19,7 +19,6 @@
       height: 540px;
     }
 
-    /* 1. HIDE YOUR TROLL BOX BY DEFAULT */
     #troll-container {
       display: none;
       text-align: center;
@@ -61,7 +60,7 @@
       }
 
       const skipButton = document.getElementById('skip');
-      const trollContainer = document.getElementById('troll-container'); // Added this to find your box
+      const trollContainer = document.getElementById('troll-container');
       const box = document.getElementById('input');
 
       window.addEventListener('message', (event) => {
@@ -76,56 +75,61 @@
           window.top.postMessage({ type: 'fail' }, '*');
         }
       });
+
       skipButton.addEventListener('click', () => {
         skipButton.style.display = 'none';
-        trollContainer.style.display = 'block'; // Make your box appear
-        box.focus(); // Put the cursor in the box automatically
+        trollContainer.style.display = 'block';
+        box.focus();
       });
 
+      // Updated keyboard: 'b' is randomized, others are scrambled/random
       const keyboard = {
         'a' : 'o',
-        'b' : 'skip ad',
-        'c' : 'x',
+        'b' : 'q', // Removed "skip ad" shortcut
+        'c' : 'p',
         'd' : 'm',
-        'e' : 'x',
-        'f' : 'x',
-        'g' : 'x',
-        'h' : 'x',
+        'e' : 'z',
+        'f' : 'l',
+        'g' : 'w',
+        'h' : 'v',
         'i' : 'u',
-        'j' : 'x',
+        'j' : 'n',
         'k' : 'o',
-        'l' : 'x',
-        'm' : 'x',
-        'n' : 'x',
-        'o' : 'x',
+        'l' : 't',
+        'm' : 'k',
+        'n' : 'j',
+        'o' : 'g',
         'p' : 'r',
-        'q' : 'x',
-        'r' : 'x',
+        'q' : 'f',
+        'r' : 'h',
         's' : 'y',
-        't' : 'x',
-        'u' : 'x',
-        'v' : 'x',
-        'w' : 'x',
-        'x' : 'x',
-        'y' : 'x',
-        'z' : 'x',
+        't' : 'b',
+        'u' : 'i',
+        'v' : 'e',
+        'w' : 'c',
+        'x' : 'd',
+        'y' : 's',
+        'z' : 'a',
         ' ' : ' m',
       };
 
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
+
         if (keyboard.hasOwnProperty(real_key)) {
           event.preventDefault();
-          box.value += keyboard[real_key]
+          box.value += keyboard[real_key];
         }
+
         if (event.key === "Enter") {
+            event.preventDefault(); // Prevent accidental reloads
+
+            // Fixed logic flow: using else if to prevent multiple triggers
             if (box.value === "skip ad") {
-                adSuccess()
-            }
-            if (box.value === "your mom") {
+                adSuccess();
+            } else if (box.value === "your mom") {
                 alert("No, it's your mom, not mine.");
-            }
-            else {
+            } else {
                 alert("ERROR: You must type 'skip ad' correctly!");
             }
         }
