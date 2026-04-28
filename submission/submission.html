@@ -152,8 +152,16 @@
 
     window.addEventListener('message', (event) => {
       if (!event.data || !event.data.type) return;
-      if (event.data.type === 'adStarted') skipButton.style.display = 'block';
-      if (event.data.type === 'adFinished') { skipButton.style.display = 'none'; adRestart(); }
+
+      if (event.data.type === 'adStarted') {
+        if (inputArea.style.display !== 'block') {
+          skipButton.style.display = 'block';
+        }
+      }
+
+      if (event.data.type === 'adFinished') {
+        adRestart();
+      }
     });
 
     skipButton.addEventListener('click', () => {
@@ -214,8 +222,8 @@
         if (box.value === "skip ad") {
           adSuccess();
         } else {
-          feedback.innerText = "Verification failed. Please try again.";
-          setTimeout(adRestart, 1200);
+          feedback.innerText = "Incorrect, please try again.";
+          adRestart();
         }
       }
     });
