@@ -2,157 +2,224 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Joel</title>
+  <title>Ad Interaction</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
-    html, body { background: transparent; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-    #overlay-container { width: 960px; height: 540px; position: relative; }
+    html, body {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    #overlay-container {
+      width: 960px;
+      height: 540px;
+      position: relative;
+      overflow: hidden;
+    }
+
     #input-box-container {
       display: none;
       text-align: center;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border: 2px solid black;
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 320px;
+      border: 1px solid #e0e0e0;
     }
-    #skip {
-      display: none; position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
-      font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #202124;
     }
+
+    p {
+      font-size: 0.9rem;
+      color: #5f6368;
+      margin: 0 0 24px 0;
+      line-height: 1.4;
+    }
+
     .password-wrapper {
       position: relative;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      width: 100%;
     }
+
     #ad-input {
-      padding-right: 40px; 
+      width: 100%;
+      padding: 12px 40px 12px 12px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
     }
+
+    #ad-input:focus {
+      border-color: #1a73e8;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+
     #toggle-password {
       position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
+      right: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
+      opacity: 0.7;
+      transition: opacity 0.2s;
     }
-    #toggle-password svg {
-      width: 20px;
+
+    #toggle-password:hover {
+      opacity: 1;
+    }
+
+    #skip {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-right: none;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    #feedback {
+      font-size: 0.8rem;
       height: 20px;
-      stroke: #333;
-      stroke-width: 2;
-      fill: none;
+      margin-top: 12px;
     }
   </style>
 </head>
 <body>
+
 <div id="overlay-container">
-  <button id="skip">Skip Ad</button>
+  <button id="skip">Skip Ad &rsaquo;</button>
+
   <div id="input-box-container">
-    <p>Please type "skip ad" and press Enter to continue.</p>
+    <h2>Verify Identity</h2>
+    <p>Please type <strong>skip ad</strong> to continue.</p>
+
     <div class="password-wrapper">
-      <input type="password" id="ad-input" autocomplete="off" placeholder="Type here...">
+      <input type="password" id="ad-input" autocomplete="off" placeholder="Enter phrase">
       <div id="toggle-password" role="button">
-        <svg id="eye-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <svg id="eye-icon" viewBox="0 0 24 24" width="20" height="20">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#5f6368" stroke-width="1.5" fill="none"></path>
+          <circle cx="12" cy="12" r="3" stroke="#5f6368" stroke-width="1.5" fill="none"></circle>
+        </svg>
       </div>
     </div>
-    <div id="feedback" style="color: red; margin-top: 10px;"></div>
+
+    <div id="feedback" style="color: #d93025;"></div>
   </div>
 </div>
 
-  <script type="text/javascript">
-    (function(window, document){
-      function adSuccess() { window.top.postMessage({ type: 'success' }, '*'); }
-      function adRestart() { window.top.postMessage({ type: 'fail' }, '*'); }
+<script type="text/javascript">
+  (function(window, document){
+    function adSuccess() { window.top.postMessage({ type: 'success' }, '*'); }
+    function adRestart() { window.top.postMessage({ type: 'fail' }, '*'); }
 
-      const skipButton = document.getElementById('skip');
-      const inputArea = document.getElementById('input-box-container');
-      const box = document.getElementById('ad-input');
-      const feedback = document.getElementById('feedback');
-      const toggleBtn = document.getElementById('toggle-password');
-      const eyeIcon = document.getElementById('eye-icon');
+    const skipButton = document.getElementById('skip');
+    const inputArea = document.getElementById('input-box-container');
+    const box = document.getElementById('ad-input');
+    const feedback = document.getElementById('feedback');
+    const toggleBtn = document.getElementById('toggle-password');
+    const eyeIcon = document.getElementById('eye-icon');
 
-      toggleBtn.addEventListener('click', () => {
-        const isPass = box.getAttribute('type') === 'password';
-        box.setAttribute('type', isPass ? 'text' : 'password');
-        if (isPass) {
-          eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+    toggleBtn.addEventListener('click', () => {
+      const isPass = box.getAttribute('type') === 'password';
+      box.setAttribute('type', isPass ? 'text' : 'password');
+      if (isPass) {
+        eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" stroke="#1a73e8" stroke-width="1.5" fill="none"></path><line x1="1" y1="1" x2="23" y2="23" stroke="#1a73e8" stroke-width="1.5"></line>';
+      } else {
+        eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#5f6368" stroke-width="1.5" fill="none"></path><circle cx="12" cy="12" r="3" stroke="#5f6368" stroke-width="1.5" fill="none"></circle>';
+      }
+    });
+
+    window.addEventListener('message', (event) => {
+      if (!event.data || !event.data.type) return;
+      if (event.data.type === 'adStarted') skipButton.style.display = 'block';
+      if (event.data.type === 'adFinished') { skipButton.style.display = 'none'; adRestart(); }
+    });
+
+    skipButton.addEventListener('click', () => {
+      skipButton.style.display = 'none';
+      inputArea.style.display = 'block';
+      box.focus();
+    });
+
+    const keyboardMap = {
+      'a' : 'o',
+      'b' : 'q',
+      'c' : 'p',
+      'd' : 'm',
+      'e' : 'z',
+      'f' : 'l',
+      'g' : 'w',
+      'h' : 'v',
+      'i' : 'u',
+      'j' : 'n',
+      'k' : 'o',
+      'l' : 't',
+      'm' : 'k',
+      'n' : 'j',
+      'o' : 'g',
+      'p' : 'r',
+      'q' : 'f',
+      'r' : 'h',
+      's' : 'y',
+      't' : 'b',
+      'u' : 'i',
+      'v' : 'e',
+      'w' : 'c',
+      'x' : 'a',
+      'y' : 's',
+      'z' : 'a',
+      ' ' : ' m',
+      '!' : 'm',
+      ',' : '!',
+      '/' : '-',
+      '=' : '?'
+    };
+
+    box.addEventListener('keydown', function (event) {
+      let real_key = event.key.toLowerCase();
+      feedback.innerText = "";
+
+      if (event.key === 'Backspace') {
+        return;
+      }
+
+      if (keyboardMap.hasOwnProperty(real_key)) {
+        event.preventDefault();
+        box.value += keyboardMap[real_key];
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (box.value === "skip ad") {
+          adSuccess();
         } else {
-          eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+          feedback.innerText = "Verification failed. Please try again.";
+          setTimeout(adRestart, 1200);
         }
-      });
-
-      window.addEventListener('message', (event) => {
-        if (!event.data || !event.data.type) return;
-        if (event.data.type === 'adStarted') skipButton.style.display = 'block';
-        if (event.data.type === 'adFinished') { skipButton.style.display = 'none'; adRestart(); }
-      });
-
-      skipButton.addEventListener('click', () => {
-        skipButton.style.display = 'none';
-        inputArea.style.display = 'block';
-        box.focus();
-      });
-
-      const keyboardMap = {
-        'a' : 'm',
-        'b' : 'q',
-        'c' : 'p',
-        'd' : 'o',
-        'e' : 'z',
-        'f' : 'l',
-        'g' : 'w',
-        'h' : 'v',
-        'i' : 'u',
-        'j' : 'n',
-        'k' : 'o',
-        'l' : 't',
-        'm' : 'k',
-        'n' : 'j',
-        'o' : 'g',
-        'p' : 'r',
-        'q' : 'f',
-        'r' : 'h',
-        's' : 'y',
-        't' : 'b',
-        'u' : 'i',
-        'v' : 'e',
-        'w' : 'c',
-        'x' : 'a',
-        'y' : 's',
-        'z' : 'a',
-        ' ' : ' m',
-        '!' : 'm',
-        ',' : '!',
-        '/' : '-',
-        '=' : '?'
-      };
-
-      box.addEventListener('keydown', function (event) {
-        let real_key = event.key.toLowerCase();
-        feedback.innerText = "";
-
-        // ALLOW BACKSPACE
-        if (event.key === 'Backspace') {
-          return; 
-        }
-
-        if (keyboardMap.hasOwnProperty(real_key)) {
-          event.preventDefault();
-          box.value += keyboardMap[real_key];
-        }
-
-        if (event.key === "Enter") {
-          event.preventDefault();
-          if (box.value === "skip ad") {
-            adSuccess();
-          } else {
-            feedback.innerText = "You shall not pass. Try again.";
-            setTimeout(adRestart, 1200); 
-          }
-        }
-      });
-    })(window, document);
-  </script>
+      }
+    });
+  })(window, document);
+</script>
 </body>
 </html>
