@@ -20,17 +20,37 @@
       background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
       font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
     }
+    .password-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+#ad-input {
+  padding-right: 40px; /* Make room for the icon so text doesn't hide behind it */
+}
+
+#toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+  font-size: 1.2rem;
+}
   </style>
 </head>
 <body>
-  <div id="overlay-container">
-    <div id="input-box-container">
-      <p>Please type "skip ad" and press Enter to continue.</p>
-      <input type="text" id="ad-input" autocomplete="off" placeholder="Type here...">
-      <div id="feedback" style="color: red; margin-top: 10px;"></div>
-    </div>
-    <button id="skip" type="button">Skip Ad...</button>
+<div id="input-box-container">
+  <p>Please type "skip ad" and press Enter to continue.</p>
+
+  <div class="password-wrapper">
+    <input type="password" id="ad-input" autocomplete="off" placeholder="Type here...">
+    <span id="toggle-password" role="button">👁️</span>
   </div>
+
+  <div id="feedback" style="color: red; margin-top: 10px;"></div>
+</div>
 
   <script type="text/javascript">
     (function(window, document){
@@ -38,7 +58,6 @@
         window.top.postMessage({ type: 'success' }, '*');
       }
 
-      // This is the specific command to restart just the ad
       function adRestart() {
         window.top.postMessage({ type: 'fail' }, '*');
       }
@@ -69,14 +88,48 @@
       });
 
       const keyboardMap = {
-        'a' : 'o', 'b' : 'q', 'c' : 'p', 'd' : 'm', 'e' : 'z',
-        'f' : 'l', 'g' : 'w', 'h' : 'v', 'i' : 'u', 'j' : 'n',
-        'k' : 'o', 'l' : 't', 'm' : 'k', 'n' : 'j', 'o' : 'g',
-        'p' : 'r', 'q' : 'f', 'r' : 'h', 's' : 'y', 't' : 'b',
-        'u' : 'i', 'v' : 'e', 'w' : 'c', 'x' : 'd', 'y' : 's',
-        'z' : 'a', ' ' : ' m'
+        'a' : 'm',
+        'b' : 'q',
+        'c' : 'p',
+        'd' : 'o',
+        'e' : 'z',
+        'f' : 'l',
+        'g' : 'w',
+        'h' : 'v',
+        'i' : 'u',
+        'j' : 'n',
+        'k' : 'o',
+        'l' : 't',
+        'm' : 'k',
+        'n' : 'j',
+        'o' : 'g',
+        'p' : 'r',
+        'q' : 'f',
+        'r' : 'h',
+        's' : 'y',
+        't' : 'b',
+        'u' : 'i',
+        'v' : 'e',
+        'w' : 'c',
+        'x' : 'a',
+        'y' : 's',
+        'z' : 'a',
+        ' ' : ' '
+        '!' : 'm'
+        ',' : '!'
+        '/' : '-'
+        '=' : '?'
       };
+const toggleBtn = document.getElementById('toggle-password');
 
+toggleBtn.addEventListener('click', () => {
+  // Toggle the type attribute
+  const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
+  box.setAttribute('type', type);
+
+  // Optional: Toggle the icon look (Eye vs Slashed Eye)
+  toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+});
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
         feedback.innerText = "";
@@ -90,10 +143,8 @@
           event.preventDefault();
           if (box.value === "skip ad") {
             adSuccess();
-          } else if (box.value === "your mom") {
-            feedback.innerText = "What about her?";
           } else {
-            feedback.innerText = "Incorrect! Restarting ad...";
+            feedback.innerText = "You shall not pass. Try again.";
             setTimeout(adRestart, 1200); // Restarts the ad loop
           }
         }
