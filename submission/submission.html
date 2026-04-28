@@ -5,16 +5,19 @@
   <title>Joel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
-    html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
+    html, body { background: transparent; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     #overlay-container { width: 960px; height: 540px; position: relative; }
 
     #input-box-container {
       display: none;
       text-align: center;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 20px;
-      border: 2px solid black;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border: 1px solid #d1d1d1;
+      border-radius: 12px;
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 300px;
     }
 
     #skip {
@@ -23,24 +26,43 @@
       font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
     }
 
-    /* Added these to make the eye icon work visually */
     .password-wrapper {
       position: relative;
-      display: inline-block;
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
     }
 
     #ad-input {
-      padding-right: 40px;
+      width: 100%;
+      padding: 10px;
+      padding-right: 35px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
     }
 
     #toggle-password {
       position: absolute;
       right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
       cursor: pointer;
-      user-select: none;
-      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      opacity: 0.6;
+    }
+
+    #toggle-password:hover { opacity: 1; }
+
+    /* Apple-style SVG sizing */
+    #toggle-password svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: #333;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
   </style>
 </head>
@@ -50,51 +72,51 @@
   <button id="skip">Skip Ad</button>
 
   <div id="input-box-container">
-    <p>Please type "skip ad" and press Enter to continue.</p>
+    <p style="margin: 0 0 10px 0; color: #333;">Please type "skip ad" and press Enter to continue.</p>
 
     <div class="password-wrapper">
-      <input type="password" id="ad-input" autocomplete="off" placeholder="Type here...">
-      <span id="toggle-password" role="button">👁️</span>
+      <input type="password" id="ad-input" autocomplete="off" placeholder="Required">
+      <div id="toggle-password" role="button">
+        <svg id="eye-icon" viewBox="0 0 24 24">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      </div>
     </div>
 
-    <div id="feedback" style="color: red; margin-top: 10px;"></div>
+    <div id="feedback" style="color: red; margin-top: 10px; font-size: 12px; height: 15px;"></div>
   </div>
 </div>
 
   <script type="text/javascript">
     (function(window, document){
-      function adSuccess() {
-        window.top.postMessage({ type: 'success' }, '*');
-      }
-
-      function adRestart() {
-        window.top.postMessage({ type: 'fail' }, '*');
-      }
+      function adSuccess() { window.top.postMessage({ type: 'success' }, '*'); }
+      function adRestart() { window.top.postMessage({ type: 'fail' }, '*'); }
 
       const skipButton = document.getElementById('skip');
       const inputArea = document.getElementById('input-box-container');
       const box = document.getElementById('ad-input');
       const feedback = document.getElementById('feedback');
       const toggleBtn = document.getElementById('toggle-password');
+      const eyeIcon = document.getElementById('eye-icon');
 
-      // Toggle functionality logic
+      // Toggle Logic using SVG Path change
       toggleBtn.addEventListener('click', () => {
-        const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
-        box.setAttribute('type', type);
-        toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+        const isPassword = box.getAttribute('type') === 'password';
+        box.setAttribute('type', isPassword ? 'text' : 'password');
+
+        // Change SVG to "Hidden" state (Eye with Slash) if showing text
+        if (isPassword) {
+          eyeIcon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+        } else {
+          eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        }
       });
 
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
-
-        if (event.data.type === 'adStarted') {
-          skipButton.style.display = 'block';
-        }
-
-        if (event.data.type === 'adFinished') {
-          skipButton.style.display = 'none';
-          adRestart();
-        }
+        if (event.data.type === 'adStarted') { skipButton.style.display = 'block'; }
+        if (event.data.type === 'adFinished') { skipButton.style.display = 'none'; adRestart(); }
       });
 
       skipButton.addEventListener('click', () => {
@@ -103,7 +125,7 @@
         box.focus();
       });
 
-      // Fixed the missing commas in your map below
+      // RESTORED ORIGINAL KEYBOARD MAP
       const keyboardMap = {
         'a' : 'm',
         'b' : 'q',
