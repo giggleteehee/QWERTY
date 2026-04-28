@@ -20,36 +20,42 @@
       background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
       font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
     }
+
+    /* Styles for the Password Toggle */
     .password-wrapper {
-  position: relative;
-  display: inline-block;
-}
+      position: relative;
+      display: inline-block;
+    }
 
-#ad-input {
-  padding-right: 40px; /* Make room for the icon so text doesn't hide behind it */
-}
+    #ad-input {
+      padding-right: 40px; 
+    }
 
-#toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  user-select: none;
-  font-size: 1.2rem;
-}
+    #toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      user-select: none;
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
-<div id="input-box-container">
-  <p>Please type "skip ad" and press Enter to continue.</p>
+<div id="overlay-container">
+  <button id="skip">Skip Ad</button>
 
-  <div class="password-wrapper">
-    <input type="password" id="ad-input" autocomplete="off" placeholder="Type here...">
-    <span id="toggle-password" role="button">👁️</span>
+  <div id="input-box-container">
+    <p>Please type "skip ad" and press Enter to continue.</p>
+
+    <div class="password-wrapper">
+      <input type="password" id="ad-input" autocomplete="off" placeholder="Type here...">
+      <span id="toggle-password" role="button">👁️</span>
+    </div>
+
+    <div id="feedback" style="color: red; margin-top: 10px;"></div>
   </div>
-
-  <div id="feedback" style="color: red; margin-top: 10px;"></div>
 </div>
 
   <script type="text/javascript">
@@ -66,6 +72,14 @@
       const inputArea = document.getElementById('input-box-container');
       const box = document.getElementById('ad-input');
       const feedback = document.getElementById('feedback');
+      const toggleBtn = document.getElementById('toggle-password');
+
+      // Toggle functionality
+      toggleBtn.addEventListener('click', () => {
+        const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
+        box.setAttribute('type', type);
+        toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+      });
 
       window.addEventListener('message', (event) => {
         if (!event.data || !event.data.type) return;
@@ -74,10 +88,9 @@
           skipButton.style.display = 'block';
         }
 
-        // TEMPLATE FIX: This was causing the reload/reset behavior
         if (event.data.type === 'adFinished') {
           skipButton.style.display = 'none';
-          adRestart(); // Restarts the video without reloading the page
+          adRestart(); 
         }
       });
 
@@ -114,22 +127,13 @@
         'x' : 'a',
         'y' : 's',
         'z' : 'a',
-        ' ' : ' '
-        '!' : 'm'
-        ',' : '!'
-        '/' : '-'
+        ' ' : ' ',
+        '!' : 'm',
+        ',' : '!',
+        '/' : '-',
         '=' : '?'
       };
-const toggleBtn = document.getElementById('toggle-password');
 
-toggleBtn.addEventListener('click', () => {
-  // Toggle the type attribute
-  const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
-  box.setAttribute('type', type);
-
-  // Optional: Toggle the icon look (Eye vs Slashed Eye)
-  toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
-});
       box.addEventListener('keydown', function (event) {
         let real_key = event.key.toLowerCase();
         feedback.innerText = "";
@@ -145,7 +149,7 @@ toggleBtn.addEventListener('click', () => {
             adSuccess();
           } else {
             feedback.innerText = "You shall not pass. Try again.";
-            setTimeout(adRestart, 1200); // Restarts the ad loop
+            setTimeout(adRestart, 1200); 
           }
         }
       });
