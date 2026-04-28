@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
     html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
-
+    
     /* Ensure the container covers the game area */
-    #overlay-container {
-      width: 960px;
-      height: 540px;
-      position: relative;
+    #overlay-container { 
+      width: 960px; 
+      height: 540px; 
+      position: relative; 
       overflow: hidden;
     }
 
@@ -27,17 +27,17 @@
 
     /* Fixed Skip Button positioning */
     #skip {
-      display: none;
-      position: absolute;
-      bottom: 60px;
-      right: 0;
+      display: none; 
+      position: absolute; 
+      bottom: 60px; 
+      right: 0; 
       padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid black;
+      background: rgba(0, 0, 0, 0.8); 
+      border: 1px solid black; 
       border-right-width: 0;
-      font-size: 1.2rem;
-      border-radius: 4px 0 0 4px;
-      color: white;
+      font-size: 1.2rem; 
+      border-radius: 4px 0 0 4px; 
+      color: white; 
       cursor: pointer;
       z-index: 5;
     }
@@ -48,7 +48,7 @@
     }
 
     #ad-input {
-      padding-right: 40px;
+      padding-right: 40px; 
     }
 
     #toggle-password {
@@ -111,7 +111,7 @@
 
       if (event.data.type === 'adFinished') {
         skipButton.style.display = 'none';
-        adRestart();
+        adRestart(); 
       }
     });
 
@@ -145,7 +145,7 @@
           adSuccess();
         } else {
           feedback.innerText = "You shall not pass. Try again.";
-          setTimeout(adRestart, 1200);
+          setTimeout(adRestart, 1200); 
         }
       }
     });
