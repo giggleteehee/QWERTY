@@ -6,7 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type="text/css">
     html, body { background: transparent; margin: 0; padding: 0; font-family: sans-serif; }
-    #overlay-container { width: 960px; height: 540px; position: relative; }
+
+    /* Ensure the container covers the game area */
+    #overlay-container {
+      width: 960px;
+      height: 540px;
+      position: relative;
+      overflow: hidden;
+    }
+
     #input-box-container {
       display: none;
       text-align: center;
@@ -14,14 +22,26 @@
       padding: 20px;
       border: 2px solid black;
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    }
-    #skip {
-      display: none; position: absolute; bottom: 60px; right: 0; padding: 10px 18px;
-      background: rgba(0, 0, 0, 0.6); border: 1px solid black; border-right-width: 0;
-      font-size: 1.2rem; border-radius: 4px 0 0 4px; color: white; cursor: pointer;
+      z-index: 10; /* Make sure it stays on top */
     }
 
-    /* Styles for the Password Toggle */
+    /* Fixed Skip Button positioning */
+    #skip {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      padding: 10px 18px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid black;
+      border-right-width: 0;
+      font-size: 1.2rem;
+      border-radius: 4px 0 0 4px;
+      color: white;
+      cursor: pointer;
+      z-index: 5;
+    }
+
     .password-wrapper {
       position: relative;
       display: inline-block;
@@ -43,6 +63,7 @@
   </style>
 </head>
 <body>
+
 <div id="overlay-container">
   <button id="skip">Skip Ad</button>
 
@@ -58,102 +79,77 @@
   </div>
 </div>
 
-  <script type="text/javascript">
-    (function(window, document){
-      function adSuccess() {
-        window.top.postMessage({ type: 'success' }, '*');
+<script type="text/javascript">
+  (function(window, document){
+    function adSuccess() {
+      window.top.postMessage({ type: 'success' }, '*');
+    }
+
+    function adRestart() {
+      window.top.postMessage({ type: 'fail' }, '*');
+    }
+
+    const skipButton = document.getElementById('skip');
+    const inputArea = document.getElementById('input-box-container');
+    const box = document.getElementById('ad-input');
+    const feedback = document.getElementById('feedback');
+    const toggleBtn = document.getElementById('toggle-password');
+
+    // Toggle logic
+    toggleBtn.addEventListener('click', () => {
+      const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
+      box.setAttribute('type', type);
+      toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+
+    window.addEventListener('message', (event) => {
+      if (!event.data || !event.data.type) return;
+
+      if (event.data.type === 'adStarted') {
+        skipButton.style.display = 'block';
       }
 
-      function adRestart() {
-        window.top.postMessage({ type: 'fail' }, '*');
-      }
-
-      const skipButton = document.getElementById('skip');
-      const inputArea = document.getElementById('input-box-container');
-      const box = document.getElementById('ad-input');
-      const feedback = document.getElementById('feedback');
-      const toggleBtn = document.getElementById('toggle-password');
-
-      // Toggle functionality
-      toggleBtn.addEventListener('click', () => {
-        const type = box.getAttribute('type') === 'password' ? 'text' : 'password';
-        box.setAttribute('type', type);
-        toggleBtn.textContent = type === 'password' ? '👁️' : '🙈';
-      });
-
-      window.addEventListener('message', (event) => {
-        if (!event.data || !event.data.type) return;
-
-        if (event.data.type === 'adStarted') {
-          skipButton.style.display = 'block';
-        }
-
-        if (event.data.type === 'adFinished') {
-          skipButton.style.display = 'none';
-          adRestart();
-        }
-      });
-
-      skipButton.addEventListener('click', () => {
+      if (event.data.type === 'adFinished') {
         skipButton.style.display = 'none';
-        inputArea.style.display = 'block';
-        box.focus();
-      });
+        adRestart();
+      }
+    });
 
-      const keyboardMap = {
-        'a' : 'm',
-        'b' : 'q',
-        'c' : 'p',
-        'd' : 'o',
-        'e' : 'z',
-        'f' : 'l',
-        'g' : 'w',
-        'h' : 'v',
-        'i' : 'u',
-        'j' : 'n',
-        'k' : 'o',
-        'l' : 't',
-        'm' : 'k',
-        'n' : 'j',
-        'o' : 'g',
-        'p' : 'r',
-        'q' : 'f',
-        'r' : 'h',
-        's' : 'y',
-        't' : 'b',
-        'u' : 'i',
-        'v' : 'e',
-        'w' : 'c',
-        'x' : 'a',
-        'y' : 's',
-        'z' : 'a',
-        ' ' : ' ',
-        '!' : 'm',
-        ',' : '!',
-        '/' : '-',
-        '=' : '?'
-      };
+    skipButton.addEventListener('click', () => {
+      skipButton.style.display = 'none';
+      inputArea.style.display = 'block';
+      box.focus();
+    });
 
-      box.addEventListener('keydown', function (event) {
-        let real_key = event.key.toLowerCase();
-        feedback.innerText = "";
+    const keyboardMap = {
+      'a' : 'm', 'b' : 'q', 'c' : 'p', 'd' : 'o', 'e' : 'z',
+      'f' : 'l', 'g' : 'w', 'h' : 'v', 'i' : 'u', 'j' : 'n',
+      'k' : 'o', 'l' : 't', 'm' : 'k', 'n' : 'j', 'o' : 'g',
+      'p' : 'r', 'q' : 'f', 'r' : 'h', 's' : 'y', 't' : 'b',
+      'u' : 'i', 'v' : 'e', 'w' : 'c', 'x' : 'a', 'y' : 's',
+      'z' : 'a', ' ' : ' ', '!' : 'm', ',' : '!', '/' : '-', '=' : '?'
+    };
 
-        if (keyboardMap.hasOwnProperty(real_key)) {
-          event.preventDefault();
-          box.value += keyboardMap[real_key];
+    box.addEventListener('keydown', function (event) {
+      let real_key = event.key.toLowerCase();
+      feedback.innerText = "";
+
+      if (keyboardMap.hasOwnProperty(real_key)) {
+        event.preventDefault();
+        box.value += keyboardMap[real_key];
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        if (box.value === "skip ad") {
+          adSuccess();
+        } else {
+          feedback.innerText = "You shall not pass. Try again.";
+          setTimeout(adRestart, 1200);
         }
-
-        if (event.key === "Enter") {
-          event.preventDefault();
-          if (box.value === "skip ad") {
-            adSuccess();
-          } else {
-            feedback.innerText = "You shall not pass. Try again.";
-            setTimeout(adRestart, 1200);
-          }
-        }
-      });
-    })(window, document);
-  </script>
+      }
+    });
+  })(window, document);
+</script>
 </body>
 </html>
