@@ -25,7 +25,7 @@
       display: inline-block;
     }
     #ad-input {
-      padding-right: 40px;
+      padding-right: 40px; 
     }
     #toggle-password {
       position: absolute;
@@ -134,7 +134,7 @@
 
         // ALLOW BACKSPACE
         if (event.key === 'Backspace') {
-          return;
+          return; 
         }
 
         if (keyboardMap.hasOwnProperty(real_key)) {
@@ -148,7 +148,7 @@
             adSuccess();
           } else {
             feedback.innerText = "You shall not pass. Try again.";
-            setTimeout(adRestart, 1200);
+            setTimeout(adRestart, 1200); 
           }
         }
       });
